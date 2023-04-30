@@ -1,0 +1,5 @@
+.cache/
+.vscode/
+.clang-format
+build/
+lcm-types/
