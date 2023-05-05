@@ -547,6 +547,12 @@ void Simulation::buildLcmMessage() {
       _simLCM.f_foot[leg][joint] = _simulator->getContactForce(gcID)[joint];
     }
   }
+
+  for (size_t i = 0; i < 2; ++i) {
+    _simLCM.leftStickAnalog[i] = _window->getDriverCommand().leftStickAnalog[i];
+    _simLCM.rightStickAnalog[i] =
+        _window->getDriverCommand().rightStickAnalog[i];
+  }
 }
 
 /*!
