@@ -553,6 +553,22 @@ void Simulation::buildLcmMessage() {
     _simLCM.rightStickAnalog[i] =
         _window->getDriverCommand().rightStickAnalog[i];
   }
+  
+  _simLCM.leftBumper = _window->getDriverCommand().leftBumper;
+  _simLCM.rightBumper = _window->getDriverCommand().rightBumper;
+  _simLCM.leftTriggerButton = _window->getDriverCommand().leftTriggerButton;
+  _simLCM.rightTriggerButton = _window->getDriverCommand().rightTriggerButton;
+  _simLCM.back = _window->getDriverCommand().back;
+  _simLCM.start = _window->getDriverCommand().start;
+  _simLCM.x = _window->getDriverCommand().x;
+  _simLCM.y = _window->getDriverCommand().y;
+  _simLCM.a = _window->getDriverCommand().a;
+  _simLCM.b = _window->getDriverCommand().b;
+  _simLCM.leftStickButton = _window->getDriverCommand().leftStickButton;
+  _simLCM.rightStickButton = _window->getDriverCommand().rightStickButton;
+  _simLCM.leftTriggerAnalog = _window->getDriverCommand().leftTriggerAnalog;
+  _simLCM.rightTriggerAnalog = _window->getDriverCommand().rightTriggerAnalog;
+  
 }
 
 /*!
