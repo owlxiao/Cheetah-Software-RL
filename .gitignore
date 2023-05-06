@@ -3,3 +3,4 @@
 .clang-format
 build/
 lcm-types/
+mc-build/
