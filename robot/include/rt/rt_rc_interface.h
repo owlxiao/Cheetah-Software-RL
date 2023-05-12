@@ -5,6 +5,8 @@
 #ifndef _RT_RC_INTERFACE
 #define _RT_RC_INTERFACE
 
+#include <cstddef>
+
 class rc_control_settings {
   public:
     double     mode;
