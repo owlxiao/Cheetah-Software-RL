@@ -5,9 +5,9 @@
 #include "rt/rt_rc_interface.h"
 #include "rt/rt_sbus.h"
 
-static const char *switch_names_bool[2] = {"UP", "DN"};
+static const char *switch_names_bool[2] = {"DN", "UP"};
 
-static const char *switch_names_tri[3] = {"UP", "--", "DN"};
+static const char *switch_names_tri[3] = {"DN", "--", "UP"};
 
 static Jumper_data data;
 

@@ -34,12 +34,12 @@ enum AT9s_SwitchStateTri{
     AT9S_TRI_DOWN=2,
 };
 
-enum Jumper_SwitchStateBool { JUMPER_BOOL_UP = 0, JUMPER_BOOL_DOWN = 1 };
+enum Jumper_SwitchStateBool { JUMPER_BOOL_DOWN= 0, JUMPER_BOOL_UP = 1 };
 
 enum Jumper_SwitchStateTri {
-  JUMPER_TRI_UP = 0,
+  JUMPER_TRI_DOWN = 0,
   JUMPER_TRI_MIDDLE = 1,
-  JUMPER_TRI_DOWN = 2
+  JUMPER_TRI_UP = 2
 };
 
 struct Taranis_X7_data {
