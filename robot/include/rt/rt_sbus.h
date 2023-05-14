@@ -34,6 +34,14 @@ enum AT9s_SwitchStateTri{
     AT9S_TRI_DOWN=2,
 };
 
+enum Jumper_SwitchStateBool { JUMPER_BOOL_UP = 0, JUMPER_BOOL_DOWN = 1 };
+
+enum Jumper_SwitchStateTri {
+  JUMPER_TRI_UP = 0,
+  JUMPER_TRI_MIDDLE = 1,
+  JUMPER_TRI_DOWN = 2
+};
+
 struct Taranis_X7_data {
   TaranisSwitchState left_upper_switch, left_lower_left_switch, left_lower_right_switch,
   right_upper_switch, right_lower_left_switch, right_lower_right_switch;
@@ -51,7 +59,17 @@ struct AT9s_data{
     float varB;
 };
 
+struct Jumper_data {
+    Jumper_SwitchStateBool SF, SH;
+    Jumper_SwitchStateTri SE, SA, SB, SC, SD, SG;
+    float left_stick_x, left_stick_y;
+    float right_stick_x, right_stick_y;
+};
+
 void update_taranis_x7(Taranis_X7_data* data);
 
 void update_taranis_at9s(AT9s_data* data);
+
+void update_jumper(Jumper_data *data);
+
 #endif

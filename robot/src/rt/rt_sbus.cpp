@@ -56,6 +56,10 @@
 #define SBUS_SCALE_FACTOR ((SBUS_TARGET_MAX - SBUS_TARGET_MIN) / (SBUS_RANGE_MAX - SBUS_RANGE_MIN))
 #define SBUS_SCALE_OFFSET (int)(SBUS_TARGET_MIN - (SBUS_SCALE_FACTOR * SBUS_RANGE_MIN + 0.5f))
 
+/* Jumper T16 */
+static constexpr uint16_t Jumper_Stick_Max = 2005;
+static constexpr uint16_t Jumper_Stick_Min = 982 ;
+
 pthread_mutex_t sbus_data_m;
 
 uint16_t channels[18];
@@ -339,6 +343,56 @@ void update_taranis_at9s(AT9s_data* data)
 //               data->left_stick_y,
 //               channel_data[3]);
 //    }
+}
+
+static Jumper_SwitchStateBool jumper_map_switch_bool(uint16_t in) {
+    switch (in) {
+    case 982:
+        return Jumper_SwitchStateBool::JUMPER_BOOL_DOWN;
+    case 2005:
+        return Jumper_SwitchStateBool::JUMPER_BOOL_UP;
+    default:
+        printf("[SBUS] switch bool returned bad value %d\n", in);
+        return Jumper_SwitchStateBool::JUMPER_BOOL_DOWN;
+    }
+}
+
+static Jumper_SwitchStateTri jumper_map_switch_tri(uint16_t in) {
+    switch (in) {
+    case 982:
+        return Jumper_SwitchStateTri::JUMPER_TRI_DOWN;
+    case 1494:
+        return Jumper_SwitchStateTri::JUMPER_TRI_MIDDLE;
+    case 2005:
+        return Jumper_SwitchStateTri::JUMPER_TRI_UP;
+    default:
+        printf("[SBUS] switch tri returned bad value %d\n", in);
+        return Jumper_SwitchStateTri::JUMPER_TRI_DOWN;
+    }
+}
+
+// Scale to [-1, 1]
+static float scale_stick(uint16_t in) {
+  float scaled_value = (static_cast<float>(in) - Jumper_Stick_Min) / (Jumper_Stick_Max - Jumper_Stick_Min);
+  scaled_value = scaled_value * (1.0f + 1.0f) + -1.0f;
+
+  return scaled_value;
+}
+
+void update_jumper(Jumper_data *data) {
+    pthread_mutex_lock(&sbus_data_m);
+
+    data->left_stick_x = scale_stick(channel_data[0]);
+    data->left_stick_y = scale_stick(channel_data[1]);
+    data->right_stick_y = scale_stick(channel_data[2]);
+    data->right_stick_x = scale_stick(channel_data[3]);
+
+    data->SE = jumper_map_switch_tri(channel_data[4]);
+    data->SH = jumper_map_switch_bool(channel_data[5]);
+
+    // TODO: Add more channel bindings.
+
+    pthread_mutex_unlock(&sbus_data_m);
 }
 
 #endif
