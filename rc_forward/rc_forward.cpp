@@ -22,23 +22,16 @@ int init_lcm(void) {
 }
 
 void sbus_packet_complete(void) {
-  AT9s_data data;
-  update_taranis_at9s(&data);
+  Jumper_data data;
+  update_jumper(&data);
 
-  _rc_command.SWF = data.SWF;
-  _rc_command.SWA = data.SWA;
-  _rc_command.SWB = data.SWB;
-  _rc_command.SWD = data.SWD;
-  _rc_command.SWE = data.SWE;
-  _rc_command.SWC = data.SWC;
-  _rc_command.SWG = data.SWG;
+  _rc_command.SE = data.SE;
+  _rc_command.SH = data.SH;
 
   _rc_command.left_stick_x = data.left_stick_x;
   _rc_command.left_stick_y = data.left_stick_y;
   _rc_command.right_stick_x = data.right_stick_x;
   _rc_command.right_stick_y = data.right_stick_y;
-
-  _rc_command.varB = data.varB;
 }
 
 int main(void) {
