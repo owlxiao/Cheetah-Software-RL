@@ -32,41 +32,25 @@ void init_serial_for_sbus(int fd, int baud) {
   struct termios2 tty;
 
   ioctl(fd, TCGETS2, &tty);
-  tty.c_cflag &= ~CBAUD;
-  tty.c_cflag |= BOTHER;
-  tty.c_ispeed = baud;
-  tty.c_ospeed = baud;
 
+  /**
+   * Setting serial port,8E2, non-blocking.100Kbps
+   */
+  tty.c_iflag &=
+      ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
+  tty.c_iflag |= (INPCK | IGNPAR);
+  tty.c_oflag &= ~OPOST;
+  tty.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+  tty.c_cflag &= ~(CSIZE | CRTSCTS | PARODD | CBAUD);
 
-tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
-                | INLCR | IGNCR | ICRNL | IXON);
-tty.c_oflag &= ~OPOST;
-tty.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-tty.c_cflag &= ~(CSIZE | PARENB);
-tty.c_cflag |= PARENB;
-tty.c_cflag &= ~PARODD;
-tty.c_cflag |=
-tty.c_cflag |= CS8;
-
-  // tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;  // 8-bit chars
-  // disable IGNBRK for mismatched speed tests; otherwise receive break
-  // as \000 chars
-  // tty.c_iflag &= ~IGNBRK;  // disable break processing
-  // tty.c_lflag = 0;         // no signaling chars, no echo,
-  // // no canonical processing
-  // tty.c_oflag = 0;      // no remapping, no delays
-  tty.c_cc[VMIN] = 0;//1;   // read doesn't block
-  tty.c_cc[VTIME] = 1;  // 0.5 seconds read timeout
-
-  // tty.c_iflag &= ~(IXON | IXOFF | IXANY);  // shut off xon/xoff ctrl
-
-  // tty.c_cflag |= (CLOCAL | CREAD);  // ignore modem controls,
-  // // enable reading
-  // // tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
-  // tty.c_cflag |= PARENB;
-  // tty.c_cflag &= ~CSTOPB;
-  // tty.c_cflag &= ~CRTSCTS;
-  // cfmakeraw(&tty);
+  /**
+   * use BOTHER to specify speed directly in c_[io]speed member
+   */
+  tty.c_cflag |= (CS8 | CSTOPB | CLOCAL | PARENB | BOTHER | CREAD);
+  tty.c_ispeed = 100000;
+  tty.c_ospeed = 100000;
+  tty.c_cc[VMIN] = 25;
+  tty.c_cc[VTIME] = 0;
 
   ioctl(fd, TCSETS2, &tty);
 }

@@ -47,7 +47,14 @@
 #define Right_Stick_LRight_Min 294
 #define Right_Stick_LRight_Zero 1013
 
-
+/* define range mapping here, -+100% -> 1000..2000 */
+#define SBUS_RANGE_MIN 200.0f
+#define SBUS_RANGE_MAX 1800.0f
+#define SBUS_TARGET_MIN 1000.0f
+#define SBUS_TARGET_MAX 2000.0f
+/* pre-calculate the floating point stuff as far as possible at compile time */
+#define SBUS_SCALE_FACTOR ((SBUS_TARGET_MAX - SBUS_TARGET_MIN) / (SBUS_RANGE_MAX - SBUS_RANGE_MIN))
+#define SBUS_SCALE_OFFSET (int)(SBUS_TARGET_MIN - (SBUS_SCALE_FACTOR * SBUS_RANGE_MIN + 0.5f))
 
 pthread_mutex_t sbus_data_m;
 
@@ -64,33 +71,26 @@ uint16_t channel_data[18];
  */
 void unpack_sbus_data(uint8_t sbus_data[], uint16_t *channels_) {
   if ((sbus_data[0] == 0xF) && (sbus_data[24] == 0x0)) {
-    channels_[0] = ((sbus_data[1]) | ((sbus_data[2] & 0x7) << 8));
-    channels_[1] = (sbus_data[2] >> 3) | ((sbus_data[3] & 0x3F) << 5);
-    channels_[2] = ((sbus_data[3] & 0xC0) >> 6) | (sbus_data[4] << 2) |
-                   ((sbus_data[5] & 0x1) << 10);
-    channels_[3] = ((sbus_data[5] & 0xFE) >> 1) | ((sbus_data[6] & 0xF) << 7);
-    channels_[4] = ((sbus_data[6] & 0xF0) >> 4) | ((sbus_data[7] & 0x7F) << 4);
-    channels_[5] = ((sbus_data[7] & 0x80) >> 7) | (sbus_data[8] << 1) |
-                   ((sbus_data[9] & 0x3) << 9);
-    channels_[6] = ((sbus_data[9] & 0xFC) >> 2) | ((sbus_data[10] & 0x1F) << 6);
-    channels_[7] = ((sbus_data[10] & 0xE0) >> 5) | (sbus_data[11] << 3);
-
-    channels_[8] = ((sbus_data[12]) | ((sbus_data[13] & 0x7) << 8));
-    channels_[9] = (sbus_data[13] >> 3) | ((sbus_data[14] & 0x3F) << 5);
-    channels_[10] = ((sbus_data[14] & 0xC0) >> 6) | (sbus_data[15] << 2) |
-                    ((sbus_data[16] & 0x1) << 10);
-    channels_[11] =
-        ((sbus_data[16] & 0xFE) >> 1) | ((sbus_data[17] & 0xF) << 7);
-    channels_[12] =
-        ((sbus_data[17] & 0xF0) >> 4) | ((sbus_data[18] & 0x7F) << 4);
-    channels_[13] = ((sbus_data[18] & 0x80) >> 7) | (sbus_data[19] << 1) |
-                    ((sbus_data[20] & 0x3) << 9);
-    channels_[14] =
-        ((sbus_data[20] & 0xFC) >> 2) | ((sbus_data[21] & 0x1F) << 6);
-    channels_[15] = ((sbus_data[21] & 0xE0) >> 5) | (sbus_data[22] << 3);
-
-    channels_[16] = (sbus_data[23] & 0x80) >> 7;
-    channels_[17] = (sbus_data[23] & 0x40) >> 6;
+    // clang-format off
+    /* parse sbus data to pwm */
+    channels_[0]  = (uint16_t)(((sbus_data[1]       | sbus_data[2]  << 8) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[1]  = (uint16_t)(((sbus_data[2]  >> 3 | sbus_data[3]  << 5) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[2]  = (uint16_t)(((sbus_data[3]  >> 6 | sbus_data[4]  << 2 | sbus_data[5] << 10) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[3]  = (uint16_t)(((sbus_data[5]  >> 1 | sbus_data[6]  << 7) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[4]  = (uint16_t)(((sbus_data[6]  >> 4 | sbus_data[7]  << 4) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[5]  = (uint16_t)(((sbus_data[7]  >> 7 | sbus_data[8]  << 1 | sbus_data[9] << 9) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET; 
+    channels_[6]  = (uint16_t)(((sbus_data[9]  >> 2 | sbus_data[10] << 6) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[7]  = (uint16_t)(((sbus_data[10] >> 5 | sbus_data[11] << 3) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET; 
+    // & the other 8 + 2 channels if you need them
+    channels_[8]  = (uint16_t)(((sbus_data[12]      | sbus_data[13] << 8) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[9]  = (uint16_t)(((sbus_data[13] >> 3 | sbus_data[14] << 5) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[10] = (uint16_t)(((sbus_data[14] >> 6 | sbus_data[15] << 2 | sbus_data[16] << 10) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[11] = (uint16_t)(((sbus_data[16] >> 1 | sbus_data[17] << 7) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[12] = (uint16_t)(((sbus_data[17] >> 4 | sbus_data[18] << 4) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[13] = (uint16_t)(((sbus_data[18] >> 7 | sbus_data[19] << 1 | sbus_data[20] << 9) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[14] = (uint16_t)(((sbus_data[20] >> 2 | sbus_data[21] << 6) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    channels_[15] = (uint16_t)(((sbus_data[21] >> 5 | sbus_data[22] << 3) & 0x07FF) * SBUS_SCALE_FACTOR + .5f) + SBUS_SCALE_OFFSET;
+    // clang-format on 
 
     pthread_mutex_lock(&sbus_data_m);
 
