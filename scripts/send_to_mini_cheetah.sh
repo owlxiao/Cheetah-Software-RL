@@ -17,6 +17,7 @@ cp ../scripts/config_network_lcm.sh ./robot-software
 cp -r ../robot robot-software
 cp -r ../config robot-software
 cp ./rc_test/rc_test ./robot-software/build
+cp ./rc_forward/rc_forward ./robot-software/build
 
 DATE=$(date +"%Y%m%d%H%M")
 #scp -r robot-software user@10.0.0.34:~/robot-software-$DATE/
