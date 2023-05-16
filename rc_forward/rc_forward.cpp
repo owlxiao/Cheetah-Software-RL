@@ -12,6 +12,8 @@ static rc_command_t _rc_command{};
 static lcm::LCM _lcm{"udpm://239.255.76.67:7667?ttl=255"};
 static std::mutex mutex;
 
+static constexpr int publishFreqHz = 60;
+
 int init_lcm(void) {
   if (!_lcm.good()) {
     fprintf(stderr, "LCM init error!\n");
@@ -52,10 +54,14 @@ int main(void) {
     return -1;
   }
 
+  int timeoutMs = 1000 / publishFreqHz;
+
   for (;;) {
     mutex.lock();
     _lcm.publish("rc_command", &_rc_command);
     mutex.unlock();
+
+    _lcm.handleTimeout(timeoutMs);
   }
 
   sbus_thread.join();
