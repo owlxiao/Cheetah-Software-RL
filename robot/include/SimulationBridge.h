@@ -15,16 +15,22 @@
 #include "Types.h"
 #include "Utilities/PeriodicTask.h"
 #include "Utilities/SharedMemory.h"
+#include "Utilities/utilities.h"
+#include "rt/rt_rc_lcm_interface.h"
+
+#include <lcm/lcm-cpp.hpp>
 
 class SimulationBridge {
- public:
-  explicit SimulationBridge(RobotType robot, RobotController* robot_ctrl) : 
-    _robot(robot) {
-     _fakeTaskManager = new PeriodicTaskManager;
-    _robotRunner = new RobotRunner(robot_ctrl, _fakeTaskManager, 0, "robot-task");
+public:
+  explicit SimulationBridge(RobotType robot, RobotController *robot_ctrl)
+      : _robot(robot), _lcm_rc(getLcmUrl(255)) {
+    _fakeTaskManager = new PeriodicTaskManager;
+    _robotRunner =
+        new RobotRunner(robot_ctrl, _fakeTaskManager, 0, "robot-task");
     _userParams = robot_ctrl->getUserControlParameters();
+    lcm::interface_lcm_init(&_lcm_rc);
+  }
 
- }
   void run();
   void handleControlParameters();
   void runRobotControl();
@@ -48,7 +54,9 @@ class SimulationBridge {
   u64 _iterations = 0;
 
   std::thread* sbus_thread;
-    int at9s_port;
+  int at9s_port;
+
+  lcm::LCM _lcm_rc;
 };
 
-#endif  // PROJECT_SIMULATIONDRIVER_H
+#endif // PROJECT_SIMULATIONDRIVER_H
