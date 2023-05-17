@@ -260,17 +260,7 @@ void SimulationBridge::runRobotControl() {
  */
 void SimulationBridge::run_sbus() {
   printf("[run_sbus] starting...\n");
-  int port = init_sbus(true);  // Simulation
 
-  while(true){
-      //printf("[run_sbus] run \n");
-    if (port > 0) {
-      int x = receive_sbus(port);
-//      printf("[sbus] receive sbus %d\n",x);
-      if (x) {
-          sbus_packet_complete_at9s();
-      }
-    }
+  while (0 == _lcm_rc.handle())
     usleep(5000);
-  }
 }

@@ -26,7 +26,7 @@
 #include "localization_lcmt.hpp"
 #include "state_estimator_lcmt.hpp"
 #include "RobotController.h"
-#include <lcm-cpp.hpp>
+#include <lcm/lcm-cpp.hpp>
 
 class RobotRunner : public PeriodicTask {
  public:

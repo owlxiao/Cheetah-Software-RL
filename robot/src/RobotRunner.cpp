@@ -17,6 +17,7 @@
 #include "Utilities/Timer.h"
 #include "Controllers/PositionVelocityEstimator.h"
 //#include "rt/rt_interface_lcm.h"
+#include "rt/rt_rc_lcm_interface.h"
 
 RobotRunner::RobotRunner(RobotController* robot_ctrl, 
     PeriodicTaskManager* manager, 
@@ -208,7 +209,7 @@ void RobotRunner::setupStep() {
     _cheaterModeEnabled = false;
   }
 
-  get_rc_control_settings(&rc_control);
+  lcm::get_rc_control_settings(&rc_control);
 
   // todo safety checks, sanity checks, etc...
 }
