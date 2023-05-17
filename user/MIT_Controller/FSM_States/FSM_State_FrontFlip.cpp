@@ -1,7 +1,7 @@
 #include "FSM_State_FrontFlip.h"
 #include <Controllers/WBC_Ctrl/LocomotionCtrl/LocomotionCtrl.hpp>
 #include <fstream>
-#include <lcm.h>
+#include <lcm/lcm-cpp.hpp>
 #include "simulator_lcmt.hpp"
 /**
  * Constructor for the FSM State that passes in state specific info to

@@ -6,7 +6,7 @@
 #include <include/GameController.h>
 #include <unistd.h>
 #include <fstream>
-#include <lcm.h>
+#include <lcm/lcm-cpp.hpp>
 
 // if DISABLE_HIGH_LEVEL_CONTROL is defined, the simulator will run freely,
 // without trying to connect to a robot

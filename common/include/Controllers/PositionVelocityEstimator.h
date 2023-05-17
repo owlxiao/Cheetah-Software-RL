@@ -12,7 +12,7 @@
 
 #include "Controllers/StateEstimatorContainer.h"
 #include "T265position_t.hpp"
-#include "lcm-cpp.hpp"
+#include <lcm/lcm-cpp.hpp>
 #include <thread>
 //#include <librealsense2/rs.hpp>
 //#include <iostream>
